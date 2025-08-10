@@ -42,6 +42,34 @@ canvas.addEventListener("mouseup", () => (drawing = false));
 canvas.addEventListener("mouseout", () => (drawing = false));
 
 const brushButtons = document.querySelectorAll(".brushSize");
+const brushPreview = document.getElementById("brushPreview");
+
+function updateBrushPreview(e) {
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  brushPreview.style.left = `${rect.left + x - brushSize / 2}px`;
+  brushPreview.style.top = `${rect.top + y - brushSize / 2}px`;
+  brushPreview.style.width = `${brushSize}px`;
+  brushPreview.style.height = `${brushSize}px`;
+  brushPreview.style.borderColor =
+    strokeColor === "white" ? "#aaa" : strokeColor;
+  brushPreview.style.display = "block";
+}
+
+canvas.addEventListener("mousemove", (e) => {
+  updateBrushPreview(e);
+});
+
+canvas.addEventListener("mouseenter", (e) => {
+  updateBrushPreview(e);
+  brushPreview.style.display = "block";
+});
+
+canvas.addEventListener("mouseleave", () => {
+  brushPreview.style.display = "none";
+});
+
 brushButtons.forEach((btn) => {
   btn.addEventListener("click", (e) => {
     const size = btn.getAttribute("data-size");
@@ -53,5 +81,9 @@ brushButtons.forEach((btn) => {
       strokeColor = "black";
       brushSize = parseInt(size, 10);
     }
+    brushPreview.style.width = `${brushSize}px`;
+    brushPreview.style.height = `${brushSize}px`;
+    brushPreview.style.borderColor =
+      strokeColor === "white" ? "#aaa" : strokeColor;
   });
 });

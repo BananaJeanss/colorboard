@@ -8,9 +8,24 @@
   </head>
   <body>
     <canvas id="canvas" draggable="false"></canvas>
+    <div
+      id="brushPreview"
+      style="
+        position: fixed;
+        pointer-events: none;
+        z-index: 1000;
+        border: 2px solid #000;
+        border-radius: 50%;
+        display: none;
+      "
+    ></div>
     <div class="onlineCount">
-        <span>Online Users: </span>
-        <span id="count">0</span>
+      <span>Online Users: </span>
+      <span id="count">0</span>
+    </div>
+    <div class="nextReset">
+      <span>Next Reset In: </span>
+      <span id="resetTimer">00:00</span>
     </div>
     <div class="brushSizes">
       <button class="brushSize" data-size="5">

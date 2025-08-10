@@ -4,6 +4,7 @@ const ctx = canvas.getContext("2d");
 canvas.width = window.innerWidth;
 canvas.height = window.innerHeight;
 canvas.draggable = false;
+canvas.addEventListener("dragstart", (e) => e.preventDefault());
 
 let drawing = false;
 let lastX = 0,
@@ -13,21 +14,28 @@ let brushSize = 5;
 let strokeColor = "black";
 
 canvas.addEventListener("mousedown", (e) => {
+  e.preventDefault();
   drawing = true;
-  [lastX, lastY] = [e.clientX, e.clientY];
+  const rect = canvas.getBoundingClientRect();
+  lastX = e.clientX - rect.left;
+  lastY = e.clientY - rect.top;
 });
 
 canvas.addEventListener("mousemove", (e) => {
   if (!drawing) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
   ctx.strokeStyle = strokeColor;
   ctx.lineWidth = brushSize;
   ctx.lineCap = "round";
 
   ctx.beginPath();
   ctx.moveTo(lastX, lastY);
-  ctx.lineTo(e.clientX, e.clientY);
+  ctx.lineTo(x, y);
   ctx.stroke();
-  [lastX, lastY] = [e.clientX, e.clientY];
+  lastX = x;
+  lastY = y;
 });
 
 canvas.addEventListener("mouseup", () => (drawing = false));

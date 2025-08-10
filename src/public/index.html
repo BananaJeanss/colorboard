@@ -120,9 +120,31 @@
         </div>
       </div>
     </div>
+    <div id="onboardingPanel">
+      <div class="onboardingCard">
+        <h2>colorboard onboarding</h2>
+        <hr />
+        <div class="settings">
+          <div class="setting">
+            <p>Username</p>
+            <input type="text" id="onboardingUsername" placeholder="BnaJns" />
+          </div>
+          <div class="setting">
+            <p>Brush Color</p>
+            <input type="color" id="onboardingBrushColor" value="#000000" disabled />
+            <div class="rerollthing">
+              <p id="onboardingRerollCount">Rerolls remaining: 3</p>
+              <button id="onboardingRerollButton">🎲</button>
+            </div>
+          </div>
+          <button id="onboardingStartButton" class="primary" disabled>Start</button>
+        </div>
+      </div>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script src="index.js"></script>
     <script src="settings.js"></script>
     <script src="onlineCount.js"></script>
+    <script src="onboarding.js"></script>
   </body>
 </html>

@@ -38,6 +38,17 @@ canvas.addEventListener("mousedown", (e) => {
   const rect = canvas.getBoundingClientRect();
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
+  
+  ctx.strokeStyle = strokeColor;
+  ctx.lineWidth = brushSize;
+  ctx.globalAlpha = opacity;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.arc(lastX, lastY, brushSize / 2, 0, Math.PI * 2);
+  ctx.fillStyle = strokeColor;
+  ctx.globalAlpha = opacity;
+  ctx.fill();
 });
 
 canvas.addEventListener("mousemove", (e) => {

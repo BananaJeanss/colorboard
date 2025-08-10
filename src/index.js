@@ -20,6 +20,23 @@ const MAX_EVENTS = 5000;
 // live cursors map
 const cursors = new Map();
 
+// reset every 5 minutes
+const RESET_EVERY_MS = Number(5 * 60 * 1000);
+let nextResetAt = Date.now() + RESET_EVERY_MS;
+
+function scheduleNextReset() {
+  const dueIn = Math.max(0, nextResetAt - Date.now());
+  setTimeout(() => {
+    // clear canvas history
+    strokes.length = 0;
+    io.emit("reset:clear");
+    // schedule next and notify clients
+    nextResetAt = Date.now() + RESET_EVERY_MS;
+    io.emit("reset:schedule", { nextResetAt });
+    scheduleNextReset();
+  }, dueIn);
+}
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -33,12 +50,15 @@ app.use(
 );
 app.use(express.static("src/public"));
 
+// kick off the reset schedule loop
+scheduleNextReset();
+
 io.on("connection", (socket) => {
   onlineCount++;
   io.emit("onlineCount", { online: onlineCount });
 
   // send current canvas history to the new client
-  socket.emit("init", { strokes });
+  socket.emit("init", { strokes, nextResetAt, resetEveryMs: RESET_EVERY_MS });
   socket.emit(
     "cursors:init",
     Array.from(cursors.entries()).map(([id, data]) => ({ id, ...data }))

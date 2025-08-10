@@ -10,7 +10,7 @@ canvas.addEventListener("dragstart", (e) => e.preventDefault());
 let socket;
 try {
   if (window.io) {
-    window.cbSocket = window.cbSocket || window.io();
+    window.cbSocket = window.io();
     socket = window.cbSocket;
   }
 } catch {}
@@ -185,7 +185,7 @@ opacitySlider.addEventListener("input", (e) => {
 })();
 
 if (socket) {
-  socket.on("init", ({ strokes = [] } = {}) => {
+  socket.on("init", ({ strokes = [], nextResetAt, resetEveryMs } = {}) => {
     // re-render a fresh canvas from history
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     for (const s of strokes) {
@@ -195,6 +195,13 @@ if (socket) {
         drawLine(s.x0, s.y0, s.x1, s.y1, s.size, s.color, s.opacity);
       }
     }
+    // expose schedule to timer script if needed
+    if (typeof nextResetAt === "number") {
+      window.__cbNextResetAt = nextResetAt;
+    }
+    if (typeof resetEveryMs === "number") {
+      window.__cbResetEveryMs = resetEveryMs;
+    }
   });
 
   socket.on("draw:dot", ({ x, y, size, color, opacity }) => {
@@ -203,6 +210,11 @@ if (socket) {
 
   socket.on("draw:line", ({ x0, y0, x1, y1, size, color, opacity }) => {
     drawLine(x0, y0, x1, y1, size, color, opacity);
+  });
+
+  // clear the canvas on reset
+  socket.on("reset:clear", () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
   });
 }
 

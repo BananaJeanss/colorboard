@@ -17,6 +17,9 @@ let onlineCount = 0;
 const strokes = [];
 const MAX_EVENTS = 5000;
 
+// live cursors map
+const cursors = new Map();
+
 app.use(
   helmet({
     contentSecurityPolicy: {
@@ -36,6 +39,10 @@ io.on("connection", (socket) => {
 
   // send current canvas history to the new client
   socket.emit("init", { strokes });
+  socket.emit(
+    "cursors:init",
+    Array.from(cursors.entries()).map(([id, data]) => ({ id, ...data }))
+  );
 
   // receive draw events and broadcast to everyone else
   socket.on("draw:dot", (evt) => {
@@ -71,9 +78,32 @@ io.on("connection", (socket) => {
     } catch {}
   });
 
+  // live cursor updates
+  socket.on("cursor:move", (evt) => {
+    try {
+      const { nx, ny, username, color } = evt || {};
+      if (
+        typeof nx === "number" && nx >= 0 && nx <= 1 &&
+        typeof ny === "number" && ny >= 0 && ny <= 1 &&
+        typeof username === "string" && username.length <= 40 &&
+        typeof color === "string"
+      ) {
+        const data = { nx, ny, username, color, ts: Date.now() };
+        cursors.set(socket.id, data);
+        socket.broadcast.emit("cursor:move", { id: socket.id, nx, ny, username, color });
+      }
+    } catch {}
+  });
+
   socket.on("disconnect", () => {
     onlineCount--;
     io.emit("onlineCount", { online: onlineCount });
+
+    // remove cursor for this user
+    if (cursors.has(socket.id)) {
+      cursors.delete(socket.id);
+      socket.broadcast.emit("cursor:leave", { id: socket.id });
+    }
   });
 });
 

@@ -1,13 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>colorboard</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
     <canvas id="canvas"></canvas>
+    <div class="brushSizes">
+      <button class="brushSize" data-size="5">
+        <span
+          style="
+            display: inline-block;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: #000;
+          "
+        ></span>
+      </button>
+      <button class="brushSize" data-size="10">
+        <span
+          style="
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            background: #000;
+          "
+        ></span>
+      </button>
+      <button class="brushSize" data-size="15">
+        <span
+          style="
+            display: inline-block;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: #000;
+          "
+        ></span>
+      </button>
+      <button class="brushSize" data-size="20">
+        <span
+          style="
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #000;
+          "
+        ></span>
+      </button>
+      <button class="brushSize" data-size="25">
+        <span
+          style="
+            display: inline-block;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            background: #000;
+          "
+        ></span>
+      </button>
+      <button class="brushSize" data-size="eraser">
+        <span style="font-size: 28px">🧽</span>
+      </button>
+    </div>
     <script src="index.js"></script>
-</body>
+  </body>
 </html>

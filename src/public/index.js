@@ -11,6 +11,7 @@ let lastX = 0,
   lastY = 0;
 
 let brushSize = 5;
+let opacity = 1;
 let strokeColor = "black";
 
 canvas.addEventListener("mousedown", (e) => {
@@ -28,6 +29,8 @@ canvas.addEventListener("mousemove", (e) => {
   const y = e.clientY - rect.top;
   ctx.strokeStyle = strokeColor;
   ctx.lineWidth = brushSize;
+  ctx.globalAlpha = opacity;
+  ctx.lineJoin = "round";
   ctx.lineCap = "round";
 
   ctx.beginPath();
@@ -86,4 +89,11 @@ brushButtons.forEach((btn) => {
     brushPreview.style.borderColor =
       strokeColor === "white" ? "#aaa" : strokeColor;
   });
+});
+
+const opacitySlider = document.getElementById("opacitySlider");
+const opacityValueSpan = document.getElementById("opacityValue");
+opacitySlider.addEventListener("input", (e) => {
+  opacity = e.target.value / 100;
+  opacityValueSpan.textContent = Math.round(opacity * 100);
 });

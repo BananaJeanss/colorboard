@@ -3,7 +3,8 @@
   let socket;
   try {
     if (window.io) {
-      socket = window.io();
+      window.cbSocket = window.cbSocket || window.io();
+      socket = window.cbSocket;
     }
   } catch {}
 

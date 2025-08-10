@@ -6,6 +6,15 @@ canvas.height = window.innerHeight;
 canvas.draggable = false;
 canvas.addEventListener("dragstart", (e) => e.preventDefault());
 
+// setup socket
+let socket;
+try {
+  if (window.io) {
+    window.cbSocket = window.cbSocket || window.io();
+    socket = window.cbSocket;
+  }
+} catch {}
+
 let drawing = false;
 let lastX = 0,
   lastY = 0;
@@ -32,6 +41,30 @@ function setBrushColor(color) {
 
 window.setBrushColor = setBrushColor;
 
+function drawDot(x, y, size, color, a = 1) {
+  ctx.save();
+  ctx.globalAlpha = a;
+  ctx.fillStyle = color;
+  ctx.beginPath();
+  ctx.arc(x, y, size / 2, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.restore();
+}
+
+function drawLine(x0, y0, x1, y1, size, color, a = 1) {
+  ctx.save();
+  ctx.strokeStyle = color;
+  ctx.lineWidth = size;
+  ctx.globalAlpha = a;
+  ctx.lineJoin = "round";
+  ctx.lineCap = "round";
+  ctx.beginPath();
+  ctx.moveTo(x0, y0);
+  ctx.lineTo(x1, y1);
+  ctx.stroke();
+  ctx.restore();
+}
+
 canvas.addEventListener("mousedown", (e) => {
   e.preventDefault();
   drawing = true;
@@ -39,16 +72,18 @@ canvas.addEventListener("mousedown", (e) => {
   lastX = e.clientX - rect.left;
   lastY = e.clientY - rect.top;
   
-  ctx.strokeStyle = strokeColor;
-  ctx.lineWidth = brushSize;
-  ctx.globalAlpha = opacity;
-  ctx.lineJoin = "round";
-  ctx.lineCap = "round";
-  ctx.beginPath();
-  ctx.arc(lastX, lastY, brushSize / 2, 0, Math.PI * 2);
-  ctx.fillStyle = strokeColor;
-  ctx.globalAlpha = opacity;
-  ctx.fill();
+  // local draw
+  drawDot(lastX, lastY, brushSize, strokeColor, opacity);
+  // broadcast
+  if (socket) {
+    socket.emit("draw:dot", {
+      x: lastX,
+      y: lastY,
+      size: brushSize,
+      color: strokeColor,
+      opacity,
+    });
+  }
 });
 
 canvas.addEventListener("mousemove", (e) => {
@@ -56,16 +91,23 @@ canvas.addEventListener("mousemove", (e) => {
   const rect = canvas.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
-  ctx.strokeStyle = strokeColor;
-  ctx.lineWidth = brushSize;
-  ctx.globalAlpha = opacity;
-  ctx.lineJoin = "round";
-  ctx.lineCap = "round";
 
-  ctx.beginPath();
-  ctx.moveTo(lastX, lastY);
-  ctx.lineTo(x, y);
-  ctx.stroke();
+  // local draw
+  drawLine(lastX, lastY, x, y, brushSize, strokeColor, opacity);
+
+  // broadcast
+  if (socket) {
+    socket.emit("draw:line", {
+      x0: lastX,
+      y0: lastY,
+      x1: x,
+      y1: y,
+      size: brushSize,
+      color: strokeColor,
+      opacity,
+    });
+  }
+
   lastX = x;
   lastY = y;
 });
@@ -141,3 +183,33 @@ opacitySlider.addEventListener("input", (e) => {
     }
   } catch {}
 })();
+
+if (socket) {
+  socket.on("init", ({ strokes = [] } = {}) => {
+    // re-render a fresh canvas from history
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    for (const s of strokes) {
+      if (s.t === "dot") {
+        drawDot(s.x, s.y, s.size, s.color, s.opacity);
+      } else if (s.t === "line") {
+        drawLine(s.x0, s.y0, s.x1, s.y1, s.size, s.color, s.opacity);
+      }
+    }
+  });
+
+  socket.on("draw:dot", ({ x, y, size, color, opacity }) => {
+    drawDot(x, y, size, color, opacity);
+  });
+
+  socket.on("draw:line", ({ x0, y0, x1, y1, size, color, opacity }) => {
+    drawLine(x0, y0, x1, y1, size, color, opacity);
+  });
+}
+
+// handle window resize keeping current bitmap (scale disabled for simplicity)
+window.addEventListener("resize", () => {
+  const snapshot = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  ctx.putImageData(snapshot, 0, 0);
+});

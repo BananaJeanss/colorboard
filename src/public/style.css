@@ -1,8 +1,10 @@
-@import url('https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Mozilla+Headline:wght@200..700&display=swap");
 
 body {
   overflow: hidden;
-  font-family: 'Mozilla Headline', sans-serif;
+  font-family: "Mozilla Headline", sans-serif;
+  margin: 0;
+  padding: 0;
 }
 
 .brushSizes {
@@ -48,14 +50,14 @@ body {
 }
 
 .onlineCount::before {
-    content: "";
-    display: inline-block;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    background-color: #4caf50;
-    margin-right: 8px;
-    vertical-align: middle;
+  content: "";
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background-color: #4caf50;
+  margin-right: 8px;
+  vertical-align: middle;
 }
 
 .nextReset {
@@ -79,4 +81,115 @@ canvas {
   -ms-user-select: none;
   -webkit-user-drag: none;
   touch-action: none;
+}
+
+#openSettingsButton {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  width: 48px;
+  height: 48px;
+  border-radius: 25%;
+  background-color: #f0f0f0;
+  border: 1px solid #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 10;
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+#openSettingsButton:hover {
+  transform: scale(1.05);
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.15);
+}
+
+#settingsPanel {
+  position: fixed;
+  right: 20px;
+  bottom: 84px;
+  width: 320px;
+  max-width: calc(100vw - 40px);
+  max-height: calc(100vh - 120px);
+  overflow: auto;
+  padding: 16px 16px 20px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #000;
+  border-radius: 16px;
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+  display: none;
+  z-index: 20;
+}
+
+#settingsPanel h2 {
+  margin: 0 0 8px 0;
+}
+
+#settingsPanel hr {
+  border: none;
+  height: 1px;
+  background: #e5e5e5;
+  margin: 8px 0 12px;
+}
+
+#closeSettingsButton {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  width: 32px;
+  height: 32px;
+  border-radius: 10px;
+  border: 1px solid #000;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+
+.settings {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.setting,
+.settings > div {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+#usernameInput {
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 14px;
+}
+
+#brushColorPicker {
+  width: 100%;
+  height: 40px;
+  border: 1px solid #000;
+  border-radius: 8px;
+  padding: 0;
+}
+
+.rerollthing {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+#rerollButton {
+  width: 44px;
+  height: 36px;
+  border-radius: 10px;
+  border: 1px solid #000;
+  background: #f7f7f7;
+  cursor: pointer;
+}
+
+#rerollButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }

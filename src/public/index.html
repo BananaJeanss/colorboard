@@ -86,7 +86,7 @@
       <button class="brushSize" data-size="eraser">
         <span style="font-size: 28px">🧽</span>
       </button>
-      <div style="display: flex; flex-direction: column;">
+      <div style="display: flex; flex-direction: column">
         <p>Opacity: <span id="opacityValue">100</span>%</p>
         <input
           type="range"
@@ -98,6 +98,31 @@
         />
       </div>
     </div>
+    <div id="openSettingsButton">
+      <span style="font-size: 24px">⚙️</span>
+    </div>
+    <div id="settingsPanel">
+      <button id="closeSettingsButton">❌</button>
+      <h2>Settings</h2>
+      <hr />
+      <div class="settings">
+        <div class="settings">
+          <p>Username</p>
+          <input type="text" id="usernameInput" placeholder="BnaJns" />
+        </div>
+        <div class="setting">
+          <p>Brush Color</p>
+          <input type="color" id="brushColorPicker" value="#000000" disabled />
+          <div class="rerollthing">
+            <p id="rerollCount">Rerolls remaining: 3</p>
+            <button id="rerollButton">🎲</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="/socket.io/socket.io.js"></script>
     <script src="index.js"></script>
+    <script src="settings.js"></script>
+    <script src="onlineCount.js"></script>
   </body>
 </html>

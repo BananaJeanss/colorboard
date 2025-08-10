@@ -12,7 +12,25 @@ let lastX = 0,
 
 let brushSize = 5;
 let opacity = 1;
-let strokeColor = "black";
+
+let selectedColor = "#000000";
+let eraserMode = false;
+let strokeColor = selectedColor;
+
+function setBrushColor(color) {
+  selectedColor = color;
+  if (!eraserMode) {
+    strokeColor = selectedColor;
+    // update preview to reflect new color if not erasing
+    brushPreview &&
+      (brushPreview.style.borderColor =
+        strokeColor.toLowerCase() === "#ffffff" || strokeColor === "white"
+          ? "#aaa"
+          : strokeColor);
+  }
+}
+
+window.setBrushColor = setBrushColor;
 
 canvas.addEventListener("mousedown", (e) => {
   e.preventDefault();
@@ -56,7 +74,9 @@ function updateBrushPreview(e) {
   brushPreview.style.width = `${brushSize}px`;
   brushPreview.style.height = `${brushSize}px`;
   brushPreview.style.borderColor =
-    strokeColor === "white" ? "#aaa" : strokeColor;
+    strokeColor === "white" || strokeColor.toLowerCase() === "#ffffff"
+      ? "#aaa"
+      : strokeColor;
   brushPreview.style.display = "block";
 }
 
@@ -74,20 +94,23 @@ canvas.addEventListener("mouseleave", () => {
 });
 
 brushButtons.forEach((btn) => {
-  btn.addEventListener("click", (e) => {
+  btn.addEventListener("click", () => {
     const size = btn.getAttribute("data-size");
-    // check if size or 'eraser'
     if (size === "eraser") {
-      strokeColor = "white";
+      eraserMode = true;
+      strokeColor = "white"; // background
       brushSize = 20;
     } else {
-      strokeColor = "black";
+      eraserMode = false;
       brushSize = parseInt(size, 10);
+      strokeColor = selectedColor; // keep chosen color
     }
     brushPreview.style.width = `${brushSize}px`;
     brushPreview.style.height = `${brushSize}px`;
     brushPreview.style.borderColor =
-      strokeColor === "white" ? "#aaa" : strokeColor;
+      strokeColor === "white" || strokeColor.toLowerCase() === "#ffffff"
+        ? "#aaa"
+        : strokeColor;
   });
 });
 
@@ -97,3 +120,13 @@ opacitySlider.addEventListener("input", (e) => {
   opacity = e.target.value / 100;
   opacityValueSpan.textContent = Math.round(opacity * 100);
 });
+
+// initialize from saved settings if present
+(function initFromStorage() {
+  try {
+    const savedColor = localStorage.getItem("cb:selectedColor");
+    if (savedColor) {
+      setBrushColor(savedColor);
+    }
+  } catch {}
+})();
